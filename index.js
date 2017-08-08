@@ -27,7 +27,6 @@ program
     .version(packageVersion)
     .option('-d, --dryrun', 'Only print the package.xml and destructiveChanges.xml that would be generated')
     .action(function (compare, branch, target) {
-
         if (!branch || !compare) {
             console.error('branch and target branch are both required');
             program.help();
@@ -46,10 +45,13 @@ program
         }
 
         var currentDir = process.cwd();
+        console.log(currentDir);
         const gitDiff = spawnSync('git', ['--no-pager', 'diff', '--name-status', compare, branch]);
+        
         var gitDiffStdOut = gitDiff.stdout.toString('utf8');
         var gitDiffStdErr = gitDiff.stderr.toString('utf8');
-
+        console.log(gitDiffStdOut);
+        
         if (gitDiffStdErr) {
             console.error('An error has occurred: %s', gitDiffStdErr);
             process.exit(1);
@@ -86,7 +88,12 @@ program
                     console.error('File name "%s" cannot be processed, exiting', fileName);
                     process.exit(1);
                 }
-
+                
+                var codeItems = ['classes', 'pages', 'components', 'staticresources', 'triggers'];
+                if (codeItems.indexOf(parts[1]) === -1){
+                  return;
+                }
+                
                 var meta;
 
                 if (parts.length === 4) {
